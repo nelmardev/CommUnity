@@ -30,6 +30,58 @@ body {
 
   overflow-x: hidden;
   color: #ffffff;
+  animation: pageEnter 0.6s ease-out;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+header {
+  animation: fadeInUp 0.8s ease-out;
 }
 
 
@@ -134,6 +186,13 @@ nav {
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
   overflow: hidden;
   margin-top: 40px;
+  animation: morphIn 0.8s ease-out;
+  transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.login-container:hover {
+  box-shadow: 0 40px 90px rgba(80, 150, 255, 0.3);
+  border-color: rgba(120, 200, 255, 0.8);
 }
 
 /* =========================
@@ -142,6 +201,14 @@ nav {
 .login-overview {
   padding: 60px;
   color: #e8f3ff;
+  animation: slideInFromLeft 0.8s ease-out 0.2s both;
+  transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+  order: 1;
+}
+
+.login-overview:hover {
+  background: rgba(15, 50, 85, 0.8);
+  transform: translateX(-8px);
 }
 
 .login-overview h2 {
@@ -171,6 +238,14 @@ nav {
 .login-form {
   padding: 50px 60px;
   background: rgba(255, 255, 255, 0.08);
+  animation: slideInFromRight 0.8s ease-out 0.4s both;
+  transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+  order: 2;
+}
+
+.login-form:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(8px);
 }
 
 .login-form h2 {
