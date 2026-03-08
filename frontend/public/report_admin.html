@@ -56,6 +56,12 @@
 <strong id="assignedReports">0</strong>
 </div>
 
+<!-- NEW STAT -->
+<div class="card stat">
+<span>In Progress</span>
+<strong id="progressReports">0</strong>
+</div>
+
 <div class="card stat">
 <span>Fixed</span>
 <strong id="fixedReports">0</strong>
@@ -126,7 +132,6 @@
 <script>
 
 /* LOAD SIDEBAR */
-
 async function loadSidebar(){
 
 const res = await fetch("includes/sidebar.html")
@@ -147,7 +152,6 @@ link.classList.add("active")
 
 
 /* LOAD HEADER */
-
 async function loadHeader(){
 
 const res = await fetch("includes/header.html")
@@ -163,7 +167,6 @@ document.getElementById("page-description").textContent =
 
 
 /* PAGE LOADER */
-
 window.addEventListener("load",()=>{
 
 setTimeout(()=>{
@@ -171,7 +174,6 @@ document.getElementById("page-loader").style.display="none"
 },1200)
 
 })
-
 
 
 /* MOCK DATA */
@@ -215,11 +217,13 @@ reports.filter(r=>r.status==="reviewed").length
 document.getElementById("assignedReports").textContent =
 reports.filter(r=>r.status==="assigned").length
 
+document.getElementById("progressReports").textContent =
+reports.filter(r=>r.status==="in_progress").length
+
 document.getElementById("fixedReports").textContent =
 reports.filter(r=>r.status==="fixed").length
 
 }
-
 
 
 /* TABLE */
@@ -227,7 +231,6 @@ reports.filter(r=>r.status==="fixed").length
 function renderTable(){
 
 const tbody = document.getElementById("reportsTable")
-
 tbody.innerHTML = ""
 
 reports.forEach(r=>{
@@ -235,7 +238,6 @@ reports.forEach(r=>{
 const tr = document.createElement("tr")
 
 tr.innerHTML = `
-
 <td>${r.reportId}</td>
 <td>${r.title}</td>
 <td>${r.reporter}</td>
@@ -246,17 +248,14 @@ tr.innerHTML = `
 <td class="action">
 
 <button class="action-btn">
-
 <svg viewBox="0 0 24 24" width="18" height="18">
 <circle cx="12" cy="5" r="2"></circle>
 <circle cx="12" cy="12" r="2"></circle>
 <circle cx="12" cy="19" r="2"></circle>
 </svg>
-
 </button>
 
 <div class="dropdown-menu">
-
 <button class="dropdown-item">👁 View Report</button>
 <button class="dropdown-item">✏ Edit Report</button>
 <button class="dropdown-item">📌 Assign Officer</button>
@@ -264,7 +263,6 @@ tr.innerHTML = `
 <div class="dropdown-divider"></div>
 
 <button class="dropdown-item danger">🗑 Delete Report</button>
-
 </div>
 
 </td>
@@ -277,35 +275,32 @@ tbody.appendChild(tr)
 }
 
 
-
 /* DROPDOWN ACTIONS */
 
 document.addEventListener("click", function(e){
 
-const btn = e.target.closest(".action-btn");
+const btn = e.target.closest(".action-btn")
 
 if(btn){
 
-const menu = btn.nextElementSibling;
+const menu = btn.nextElementSibling
 
 document.querySelectorAll(".dropdown-menu").forEach(m=>{
 if(m !== menu){
-m.classList.remove("active");
+m.classList.remove("active")
 }
-});
+})
 
-menu.classList.toggle("active");
-
-e.stopPropagation();
-
-return;
+menu.classList.toggle("active")
+e.stopPropagation()
+return
 }
 
 document.querySelectorAll(".dropdown-menu").forEach(menu=>{
-menu.classList.remove("active");
-});
+menu.classList.remove("active")
+})
 
-});
+})
 
 
 /* MAP */
@@ -364,7 +359,6 @@ scales:{y:{beginAtZero:true}}
 function renderOfficers(){
 
 const list = document.getElementById("officerList")
-
 const counts = {}
 
 reports.forEach(r=>{
@@ -399,6 +393,7 @@ renderChart()
 renderOfficers()
 
 </script>
+
 <script src="../src/report_actions.js"></script>
 
 </body>
