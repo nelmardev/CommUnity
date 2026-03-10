@@ -30,10 +30,10 @@ const Login = () => {
         <div className="logo">CommUnity.</div>
         <nav>
           <Link to="/">Home</Link>
-          <a href="#">About</a>
-          <a href="#">Features</a>
-          <a href="#">Contact</a>
-          <a href="#" className="btn-primary">Get Started</a>
+          <a href="#about">About</a>
+          <a href="#features">Features</a>
+          <a href="#contact">Contact</a>
+          <Link to="/" className="btn-primary">Get Started</Link>
         </nav>
       </header>
 
@@ -84,12 +84,12 @@ const Login = () => {
                   required
                 />
 
-                <a href="#" className="forgot-link">Forgot Password?</a>
+                <Link to="/forgot-password" className="forgot-link">Forgot Password?</Link>
 
                 <button type="submit">LOGIN</button>
 
                 <p className="signup-text">
-                  Don't have an account? <a href="#">Sign up</a>
+                  Don't have an account? <Link to="/signup">Sign up</Link>
                 </p>
               </form>
             </div>

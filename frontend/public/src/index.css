@@ -1,3 +1,4 @@
+
 /* =========================
    RESET
 ========================= */
@@ -8,7 +9,7 @@
 }
 
 /* =========================
-   GLOBAL SCROLL FIX (REQUIRED)
+   GLOBAL SCROLL FIX
 ========================= */
 html {
   scroll-behavior: smooth;
@@ -46,7 +47,6 @@ body {
   background-repeat: no-repeat;
 }
 
-/* Overlay — does NOT block scroll */
 .hero-wrapper::before {
   content: "";
   position: absolute;
@@ -171,31 +171,20 @@ nav {
   font-size: 28px;
   font-weight: 600;
 }
-.section-text {
-  max-width: 700px;
-  margin-top: 14px;
-  margin-inline-start: 0;
-  margin-inline-end: auto;
-  color: #4b5563;
-  text-align: start;
-}
 
 .section-text {
   font-size: 20px;
   max-width: 300px;
   margin-top: 70px;
   margin-left: 10px;
-  margin-right: 0;
   color: #163364;
   text-align: left;
 }
 
 .section-text .highlight {
-  font-weight: 900; /* or 700 */
+  font-weight: 900;
   color: #163364;
 }
-
-
 
 /* =========================
    CARDS
@@ -224,24 +213,73 @@ nav {
 }
 
 /* =========================
-   CONTACT
+   CONTACT SECTION
 ========================= */
-.contact-box {
-  height: 180px;
-  background: #ffffff;
-  border-radius: 16px;
+
+.contact-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 24px;
-  color: #9ca3af;
+  gap: 60px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.contact-image img {
+  width: 320px;
+  max-width: 100%;
+}
+
+.contact-form {
+  width: 420px;
+  max-width: 100%;
+  text-align: left;
+}
+
+.contact-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-form label {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+}
+
+.contact-form textarea {
+  resize: none;
+}
+
+.contact-form button {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 999px;
+  border: none;
+  background: #7AB1F1;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.contact-form button:hover {
+  background: #5e98d8;
 }
 
 /* =========================
    FOOTER
 ========================= */
 .get-started {
- background-image: url(../images/Footer.png);
+  background-image: url(../images/Footer.png);
   color: #ffffff;
   padding: 60px 20px;
   text-align: center;
@@ -277,6 +315,7 @@ nav {
    RESPONSIVE
 ========================= */
 @media (max-width: 768px) {
+
   .hero-section {
     padding: 100px 24px;
   }
@@ -301,4 +340,10 @@ nav {
   .nav-links {
     display: none;
   }
+
+  .contact-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
 }
