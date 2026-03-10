@@ -16,23 +16,18 @@
 
 <div class="app">
 
-<!-- SIDEBAR -->
 <div id="sidebar-container"></div>
 
 <main class="main">
 
-<!-- LOADER -->
 <div id="content-loader">
 <div class="loader-spinner"></div>
 </div>
 
 <div id="page-content">
 
-<!-- HEADER -->
 <div id="header-container"></div>
 
-
-<!-- BARANGAY HEADER -->
 
 <section class="barangay-header">
 
@@ -55,11 +50,8 @@
 </section>
 
 
-<!-- PAGE LAYOUT -->
 
 <section class="barangay-layout">
-
-<!-- LEFT PANEL -->
 
 <div class="left-column">
 
@@ -74,7 +66,6 @@
 </div>
 
 
-<!-- RIGHT PANEL -->
 
 <div class="right-column">
 
@@ -101,7 +92,6 @@
 </div>
 
 
-<!-- ADD OFFICIAL MODAL -->
 
 <div class="modal" id="addModal">
 
@@ -112,12 +102,12 @@
 <input type="text" id="officialName" placeholder="Official Name">
 
 <select id="officialRole">
-<option>Barangay Captain</option>
-<option>Secretary</option>
-<option>Treasurer</option>
-<option>Kagawad</option>
-<option>Barangay Tanod</option>
-<option>Health Worker</option>
+<option value="Barangay Captain">Barangay Captain</option>
+<option value="Secretary">Secretary</option>
+<option value="Treasurer">Treasurer</option>
+<option value="Kagawad">Kagawad</option>
+<option value="Barangay Tanod">Barangay Tanod</option>
+<option value="Health Worker">Health Worker</option>
 </select>
 
 <button onclick="addOfficial()">Add</button>
@@ -128,14 +118,12 @@
 </div>
 
 
+
 <script>
 
-/* ================================
-MOCK DATABASE
-================================ */
+const STORAGE_KEY="barangayOfficialsStorage"
 
-let barangayData = {
-
+let barangayData={
 barangay:{
 name:"Barangay Bonuan Boquig",
 city:"Dagupan City",
@@ -146,22 +134,32 @@ email:"bonuanboquig@barangay.gov.ph",
 address:"Bonuan Boquig, Dagupan City",
 population:"12,350 Residents"
 },
-
 officials:[
-
-{ id:1,name:"Juan Dela Cruz",role:"Barangay Captain",image:"images/default-user.png"},
-{ id:2,name:"Maria Santos",role:"Secretary",image:"images/default-user.png"},
-{ id:3,name:"Pedro Reyes",role:"Treasurer",image:"images/default-user.png"},
-{ id:4,name:"Ana Lopez",role:"Kagawad",image:"images/default-user.png"}
-
+{id:1,name:"Juan Dela Cruz",role:"Barangay Captain",image:"images/default-user.png"},
+{id:2,name:"Maria Santos",role:"Secretary",image:"images/default-user.png"},
+{id:3,name:"Pedro Reyes",role:"Treasurer",image:"images/default-user.png"},
+{id:4,name:"Ana Lopez",role:"Kagawad",image:"images/default-user.png"}
 ]
+}
 
+let editingOfficer=null
+
+
+
+/* STORAGE */
+
+function loadData(){
+const saved=localStorage.getItem(STORAGE_KEY)
+if(saved) barangayData=JSON.parse(saved)
+}
+
+function saveData(){
+localStorage.setItem(STORAGE_KEY,JSON.stringify(barangayData))
 }
 
 
-/* ================================
-RENDER BARANGAY PROFILE
-================================ */
+
+/* BARANGAY */
 
 function renderBarangay(){
 
@@ -171,9 +169,7 @@ document.getElementById("barangayName").textContent=b.name
 document.getElementById("barangayCity").textContent=b.city
 document.getElementById("barangayLogo").src=b.logo
 
-const details=document.getElementById("barangayDetails")
-
-details.innerHTML=`
+document.getElementById("barangayDetails").innerHTML=`
 
 <li><strong>Facebook</strong><span>${b.facebook}</span></li>
 <li><strong>Telephone</strong><span>${b.telephone}</span></li>
@@ -182,13 +178,11 @@ details.innerHTML=`
 <li><strong>Population</strong><span>${b.population}</span></li>
 
 `
-
 }
 
 
-/* ================================
-UPLOAD BARANGAY LOGO
-================================ */
+
+/* LOGO */
 
 function triggerLogoUpload(){
 document.getElementById("logoUpload").click()
@@ -201,15 +195,10 @@ if(!file) return
 
 const reader=new FileReader()
 
-reader.onload=(e)=>{
-
-const img=e.target.result
-
-document.getElementById("barangayLogo").src=img
-barangayData.barangay.logo=img
-
-localStorage.setItem("barangayLogo",img)
-
+reader.onload=e=>{
+barangayData.barangay.logo=e.target.result
+saveData()
+renderBarangay()
 }
 
 reader.readAsDataURL(file)
@@ -217,20 +206,16 @@ reader.readAsDataURL(file)
 })
 
 
-function loadSavedLogo(){
 
-const savedLogo=localStorage.getItem("barangayLogo")
+/* ROLE UNIQUE */
 
-if(savedLogo){
-barangayData.barangay.logo=savedLogo
-}
-
+function roleExists(role){
+return barangayData.officials.some(o=>o.role===role)
 }
 
 
-/* ================================
-RENDER ORGANIZATIONAL CHART
-================================ */
+
+/* RENDER OFFICIALS */
 
 function renderOfficials(){
 
@@ -241,33 +226,58 @@ barangayData.officials.forEach(o=>{
 
 const card=document.createElement("div")
 card.className="official-card"
-card.dataset.id=o.id
 
 card.innerHTML=`
 
 <div class="photo-wrapper">
 
-<img src="${o.image}" class="official-photo">
+<img src="${o.image}" class="official-photo"
+onclick="triggerOfficerUpload(${o.id})">
 
 <input type="file"
-class="photo-upload"
-data-id="${o.id}"
-accept="image/*">
+id="upload-${o.id}"
+hidden
+accept="image/*"
+onchange="uploadOfficerImage(event,${o.id})">
 
 </div>
 
-<div class="name"
-contenteditable="true"
-onblur="updateName(${o.id},this.innerText)">
-${o.name}
-</div>
+<input type="text"
+class="name-input"
+value="${o.name}"
+disabled
+id="name-${o.id}">
 
-<div class="role">${o.role}</div>
+<select class="role-select"
+disabled
+id="role-${o.id}">
 
-<button class="delete-btn"
-onclick="deleteOfficial(${o.id})">
-✕
+<option ${o.role==="Barangay Captain"?"selected":""}>Barangay Captain</option>
+<option ${o.role==="Secretary"?"selected":""}>Secretary</option>
+<option ${o.role==="Treasurer"?"selected":""}>Treasurer</option>
+<option ${o.role==="Kagawad"?"selected":""}>Kagawad</option>
+<option ${o.role==="Barangay Tanod"?"selected":""}>Barangay Tanod</option>
+<option ${o.role==="Health Worker"?"selected":""}>Health Worker</option>
+
+</select>
+
+<div class="card-actions">
+
+<button id="edit-${o.id}" onclick="enableEdit(${o.id})" class="edit-btn">
+Edit
 </button>
+
+<button id="save-${o.id}" onclick="saveEdit(${o.id})"
+class="save-btn"
+style="display:none">
+Save
+</button>
+
+<button onclick="deleteOfficial(${o.id})" class="delete-btn">
+Delete
+</button>
+
+</div>
 
 `
 
@@ -275,14 +285,83 @@ container.appendChild(card)
 
 })
 
-enableUploads()
+}
+
+
+
+/* IMAGE */
+
+function triggerOfficerUpload(id){
+if(editingOfficer!==id) return
+document.getElementById("upload-"+id).click()
+}
+
+function uploadOfficerImage(e,id){
+
+const file=e.target.files[0]
+if(!file) return
+
+const reader=new FileReader()
+
+reader.onload=r=>{
+
+const officer=barangayData.officials.find(o=>o.id===id)
+officer.image=r.target.result
+
+saveData()
+renderOfficials()
+
+}
+
+reader.readAsDataURL(file)
 
 }
 
 
-/* ================================
-ADD OFFICIAL
-================================ */
+
+/* EDIT */
+
+function enableEdit(id){
+
+editingOfficer=id
+
+document.getElementById("name-"+id).disabled=false
+document.getElementById("role-"+id).disabled=false
+
+document.getElementById("edit-"+id).style.display="none"
+document.getElementById("save-"+id).style.display="inline-block"
+
+}
+
+
+
+function saveEdit(id){
+
+const name=document.getElementById("name-"+id).value
+const role=document.getElementById("role-"+id).value
+
+const officer=barangayData.officials.find(o=>o.id===id)
+
+if(["Barangay Captain","Secretary","Treasurer"].includes(role)){
+if(roleExists(role)&&officer.role!==role){
+alert(role+" already assigned")
+return
+}
+}
+
+officer.name=name
+officer.role=role
+
+editingOfficer=null
+
+saveData()
+renderOfficials()
+
+}
+
+
+
+/* ADD */
 
 function addOfficial(){
 
@@ -291,123 +370,43 @@ const role=document.getElementById("officialRole").value
 
 if(!name) return
 
+if(["Barangay Captain","Secretary","Treasurer"].includes(role)){
+if(roleExists(role)){
+alert(role+" already exists")
+return
+}
+}
+
 barangayData.officials.push({
-
 id:Date.now(),
-name,
-role,
+name:name,
+role:role,
 image:"images/default-user.png"
-
 })
 
-saveOfficials()
+saveData()
 renderOfficials()
-
 closeModal()
 
 }
 
 
-/* ================================
-DELETE OFFICIAL
-================================ */
+
+/* DELETE */
 
 function deleteOfficial(id){
 
-barangayData.officials =
+barangayData.officials=
 barangayData.officials.filter(o=>o.id!==id)
 
-saveOfficials()
+saveData()
 renderOfficials()
 
 }
 
 
-/* ================================
-EDIT NAME
-================================ */
 
-function updateName(id,newName){
-
-const official=barangayData.officials.find(o=>o.id===id)
-
-if(official){
-official.name=newName
-saveOfficials()
-}
-
-}
-
-
-/* ================================
-OFFICER IMAGE UPLOAD
-================================ */
-
-function enableUploads(){
-
-document.querySelectorAll(".photo-upload").forEach(input=>{
-
-input.addEventListener("change",function(){
-
-const file=this.files[0]
-if(!file) return
-
-const id=Number(this.dataset.id)
-
-const reader=new FileReader()
-
-reader.onload=(e)=>{
-
-const image=e.target.result
-
-this.previousElementSibling.src=image
-
-const officer=barangayData.officials.find(o=>o.id===id)
-
-if(officer){
-officer.image=image
-}
-
-saveOfficials()
-
-}
-
-reader.readAsDataURL(file)
-
-})
-
-})
-
-}
-
-
-/* ================================
-LOCAL STORAGE
-================================ */
-
-function saveOfficials(){
-
-localStorage.setItem(
-"barangayOfficials",
-JSON.stringify(barangayData.officials)
-)
-
-}
-
-function loadOfficials(){
-
-const saved=localStorage.getItem("barangayOfficials")
-
-if(saved){
-barangayData.officials=JSON.parse(saved)
-}
-
-}
-
-
-/* ================================
-MODAL
-================================ */
+/* MODAL */
 
 function openAddModal(){
 document.getElementById("addModal").style.display="flex"
@@ -418,63 +417,37 @@ document.getElementById("addModal").style.display="none"
 }
 
 
-/* ================================
-SIDEBAR
-================================ */
+
+/* HEADER + SIDEBAR */
 
 async function loadSidebar(){
-
 const res=await fetch("includes/official_sidebar.html")
-const html=await res.text()
-
-document.getElementById("sidebar-container").innerHTML=html
-
+document.getElementById("sidebar-container").innerHTML=await res.text()
 }
 
-
-/* ================================
-HEADER
-================================ */
-
 async function loadHeader(){
-
 const res=await fetch("includes/header.html")
-const html=await res.text()
-
-document.getElementById("header-container").innerHTML=html
+document.getElementById("header-container").innerHTML=await res.text()
 
 document.getElementById("page-title").textContent="Barangay Officials"
 document.getElementById("page-description").textContent="Manage barangay structure"
-
 }
 
 
-/* ================================
-PAGE LOADER
-================================ */
+
+/* PAGE LOAD */
 
 window.addEventListener("load",()=>{
 
-loadSavedLogo()
-loadOfficials()
-
+loadData()
 renderBarangay()
 renderOfficials()
 
-const loader=document.getElementById("content-loader")
-const content=document.getElementById("page-content")
-
 setTimeout(()=>{
-
-loader.style.display="none"
-content.style.opacity="1"
-
-},1000)
+document.getElementById("content-loader").style.display="none"
+},700)
 
 })
-
-
-/* INIT */
 
 loadSidebar()
 loadHeader()
